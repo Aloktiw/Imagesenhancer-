@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Mobile-first design */
+        body { font-family: Arial; text-align: center; padding: 20px; }
+        .upload-box { 
+            border: 2px dashed #ccc; 
+            padding: 30px; 
+            margin: 20px auto;
+            max-width: 400px;
+        }
+        #preview { max-width: 100%; margin-top: 20px; }
+        #enhance-btn { 
+            background: #2196F3; 
+            color: white; 
+            padding: 15px 30px;
+            border: none; 
+            border-radius: 5px;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>AI Image Enhancer</h2>
+    <div class="upload-box">
+        <input type="file" id="imageInput" accept="image/*">
+        <img id="preview">
+    </div>
+    <button id="enhance-btn" onclick="enhanceImage()">Enhance (4x)</button>
+
+    <script>
+        // Mobile-friendly image handling
+        function enhanceImage() {
+            const file = document.getElementById('imageInput').files[0];
+            const formData = new FormData();
+            formData.append('image', file);
+
+            document.getElementById('enhance-btn').textContent = 'Processing...';
+            
+            fetch('/enhance', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'enhanced_image.png';
+                a.click();
+                document.getElementById('enhance-btn').textContent = 'Enhance (4x)';
+            });
+        }
+
+        // Image preview for mobile
+        document.getElementById('imageInput').onchange = function(e) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('preview').src = event.target.result;
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    </script>
+</body>
+</html>
